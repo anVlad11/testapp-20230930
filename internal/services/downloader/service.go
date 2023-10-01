@@ -1,7 +1,7 @@
 package downloader
 
 import (
-	"github.com/anvlad11/testapp-20230930/internal/model"
+	"github.com/anvlad11/testapp-20230930/pkg/model"
 	"sync"
 	"time"
 )
@@ -38,7 +38,7 @@ func (s *Service) Start() {
 					s.mu.Unlock()
 
 					if err != nil {
-						task.Error = err
+						task.Error = err.Error()
 					}
 					task.Downloaded = true
 					s.output <- task

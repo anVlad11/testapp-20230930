@@ -1,7 +1,7 @@
 package downloader
 
 import (
-	"github.com/anvlad11/testapp-20230930/internal/model"
+	"github.com/anvlad11/testapp-20230930/pkg/model"
 	"io"
 	"net/http"
 	"strings"

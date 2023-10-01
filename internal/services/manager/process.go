@@ -1,8 +1,9 @@
 package manager
 
 import (
+	"errors"
 	"fmt"
-	"github.com/anvlad11/testapp-20230930/internal/model"
+	"github.com/anvlad11/testapp-20230930/pkg/model"
 	"net/url"
 )
 
@@ -11,8 +12,8 @@ func (s *Service) Process(task *model.Task) error {
 		return nil
 	}
 
-	if task.Error != nil {
-		return task.Error
+	if task.Error != "" {
+		return errors.New(task.Error)
 	}
 
 	if task.Root == "" {
@@ -23,7 +24,7 @@ func (s *Service) Process(task *model.Task) error {
 		task.Root = domain.String()
 	}
 
-	if _, isDone := s.done[task.URL]; isDone {
+	if _, isDone := s.done.Load(task.URL); isDone {
 		return nil
 	}
 
@@ -34,8 +35,8 @@ func (s *Service) Process(task *model.Task) error {
 
 	if !task.IsContentTypeValid {
 		task.Done = true
-		delete(s.processing, task.URL)
-		s.done[task.URL] = true
+		s.processing.Delete(task.URL)
+		s.done.Store(task.URL, true)
 		fmt.Printf("invalid: %s\n", task.URL)
 
 		return nil
@@ -47,10 +48,10 @@ func (s *Service) Process(task *model.Task) error {
 	}
 
 	for _, link := range task.Links {
-		if _, exists := s.processing[link]; exists {
+		if _, exists := s.processing.Load(link); exists {
 			continue
 		}
-		if _, exists := s.done[link]; exists {
+		if _, exists := s.done.Load(link); exists {
 			continue
 		}
 		newTask := &model.Task{
@@ -63,8 +64,8 @@ func (s *Service) Process(task *model.Task) error {
 
 	if !task.Done {
 		task.Done = true
-		delete(s.processing, task.URL)
-		s.done[task.URL] = true
+		s.processing.Delete(task.URL)
+		s.done.Store(task.URL, true)
 		fmt.Printf("done: %s\n", task.URL)
 	}
 

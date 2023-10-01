@@ -1,7 +1,7 @@
 package extractor
 
 import (
-	"github.com/anvlad11/testapp-20230930/internal/model"
+	"github.com/anvlad11/testapp-20230930/pkg/model"
 	"golang.org/x/net/html"
 	"net/url"
 	"strings"
@@ -28,7 +28,7 @@ func (s *Service) extract(task *model.Task) error {
 
 		htmlNodeQueue = htmlNodeQueue[1:]
 		if n.Type == html.ElementNode {
-			attrs := []string{"src", "href", "content"}
+			attrs := []string{"src", "href"}
 			for _, a := range n.Attr {
 				for _, attr := range attrs {
 					if a.Key == attr {
