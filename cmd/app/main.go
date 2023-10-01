@@ -36,9 +36,7 @@ func main() {
 		managerService.AddExtractor(extractorService)
 	}
 
-	managerService.Start()
-
-	err := managerService.ProcessTask(&model.Task{URL: root})
+	err := managerService.Process(&model.Task{URL: root})
 	if err != nil {
 		log.Fatalf("could not process root task: %v", err)
 	}
