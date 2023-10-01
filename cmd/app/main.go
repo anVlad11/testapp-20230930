@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/anvlad11/testapp-20230930/internal/config"
 	"github.com/anvlad11/testapp-20230930/internal/repositories/task"
 	"github.com/anvlad11/testapp-20230930/internal/services/downloader"
 	"github.com/anvlad11/testapp-20230930/internal/services/extractor"
@@ -12,41 +13,39 @@ import (
 	"time"
 )
 
-var (
-	rootVar    = flag.String("root", "", "Page to start crawling from")
-	dataDirVar = flag.String("data-dir", "./data", "Folder to store crawled pages content")
-)
+var configPath = flag.String("config-path", "./config.yaml", "Path to the application config")
 
 func main() {
 	flag.Parse()
-	if rootVar == nil {
-		log.Fatal("root is empty")
+
+	cfg, err := config.NewConfig(*configPath)
+	if err != nil {
+		log.Fatalf("config error: %v", err)
 	}
-	root := *rootVar
 
-	initTask := &model.Task{URL: root}
-
-	db, err := database.NewDatabase()
+	db, err := database.NewDatabase(cfg.DatabasePath)
 	if err != nil {
 		log.Fatalf("database error: %v", err)
 	}
 
-	taskRepository := task.NewRepository(db, *dataDirVar)
+	taskRepository := task.NewRepository(db, cfg.DataDirectory, cfg.ContentTypes)
 
 	managerService := manager.NewService(taskRepository)
 	managerService.Start()
 
-	for i := 0; i <= 3; i++ {
-		downloaderService := downloader.NewService()
+	for i := 1; i <= cfg.DownloaderCount; i++ {
+		downloaderService := downloader.NewService(cfg.ContentTypes)
 		downloaderService.Start()
 		managerService.AddDownloader(downloaderService)
 	}
 
-	for i := 0; i <= 3; i++ {
+	for i := 1; i <= cfg.ExtractorCount; i++ {
 		extractorService := extractor.NewService()
 		extractorService.Start()
 		managerService.AddExtractor(extractorService)
 	}
+
+	initTask := &model.Task{URL: cfg.RootURL}
 
 	err = managerService.Process(initTask)
 	if err != nil {

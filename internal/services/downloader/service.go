@@ -12,9 +12,16 @@ type Service struct {
 
 	isRunning bool
 	mu        sync.Mutex
+
+	validContentTypes map[string]bool
 }
 
-func NewService() *Service {
+func NewService(contentTypes map[string]string) *Service {
+	validContentTypes := map[string]bool{}
+	for contentType := range contentTypes {
+		validContentTypes[contentType] = true
+	}
+
 	return &Service{}
 }
 

@@ -11,12 +11,17 @@ import (
 )
 
 type Repository struct {
-	dataDir string
-	db      *gorm.DB
+	dataDir      string
+	db           *gorm.DB
+	contentTypes map[string]string
 }
 
-func NewRepository(db *gorm.DB, dataDir string) *Repository {
-	return &Repository{db: db, dataDir: dataDir}
+func NewRepository(db *gorm.DB, dataDir string, contentTypes map[string]string) *Repository {
+	return &Repository{
+		db:           db,
+		dataDir:      dataDir,
+		contentTypes: contentTypes,
+	}
 }
 
 func (r *Repository) Save(task *model.Task) error {
@@ -97,14 +102,7 @@ func (r *Repository) saveToFS(task *model.Task) error {
 	path = strings.Join(parts, string(os.PathSeparator))
 
 	if filepath.Ext(path) == "" {
-		extensions := map[string]string{
-			"text/html":              ".html",
-			"text/css":               ".css",
-			"application/json":       ".json",
-			"application/javascript": ".js",
-		}
-
-		if extension, exists := extensions[task.ContentType]; exists {
+		if extension, exists := r.contentTypes[task.ContentType]; exists {
 			if !strings.HasSuffix(path, extension) {
 				path = path + extension
 			}

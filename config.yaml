@@ -1,0 +1,15 @@
+root_url: https://meduza.io
+# Directory to store downloaded content
+data_directory: "./data"
+# Path to SQLite database. Will be created if not exists
+database_path: "./data/sqlite.db"
+# Amount of downloaders running in parallel. Values less than 1 are treated as 1
+downloader_count: 1
+# Amount of content extractors running in parallel. Values less than 1 are treated as 1
+extractor_count: 1
+# Valid content type config. Also defines extensions for saving files without extensions provided by server
+content_types:
+  text/html: ".html"
+  text/css: ".css"
+  application/javascript: ".js"
+  application/json: ".json"
