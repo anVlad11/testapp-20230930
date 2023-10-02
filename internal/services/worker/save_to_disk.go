@@ -18,6 +18,9 @@ func (s *Service) saveToDisk(task *model.Task) error {
 	uri, _ := url.Parse(task.URL)
 
 	path := uri.Path
+	if uri.RawQuery != "" {
+		path += "?" + uri.RawQuery
+	}
 	partsRaw := append([]string{uri.Host}, strings.Split(path, "/")...)
 	invalidChars := []string{"<", ">", ":", "\"", "\\", "|", "?", "*"}
 
