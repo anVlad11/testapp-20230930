@@ -1,11 +1,12 @@
-root_url: https://meduza.io
+# Initial page
+root_url: https://ru.wikipedia.org
 # Directory to store downloaded content
 data_directory: "./data"
 # Path to SQLite database. Will be created if not exists
 database_path: "./data/sqlite.db"
 # Amount of workers running in parallel. Values less than 1 are treated as 1
-worker_count: 5
-# Valid content type config. Also defines extensions for saving files without extensions provided by server
+worker_count: 3
+# Valid content type list. Also defines extensions for saving files without extensions provided by server
 content_types:
   text/html: ".html"
   text/css: ".css"
