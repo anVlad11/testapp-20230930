@@ -47,7 +47,7 @@ func (s *Service) Start() {
 }
 
 func (s *Service) load() int {
-	processingTasks, err := s.taskRepository.GetProcessing()
+	processingTasks, err := s.taskRepository.GetProcessing(50)
 	if err != nil {
 		fmt.Printf("could not load tasks from db: %v", err)
 	}
