@@ -11,12 +11,10 @@ type Task struct {
 	ID                 int64     `db:"id" gorm:"primarykey"`
 	URL                string    `db:"url" gorm:"uniqueIndex;index"`
 	Root               string    `db:"root" gorm:"index"`
-	ContentType        string    `db:"content_type"`
-	IsContentTypeValid bool      `db:"is_content_type_valid"`
+	ContentType        string    `db:"-" gorm:"-"`
+	IsContentTypeValid bool      `db:"-" gorm:"-"`
 	Content            string    `db:"-" gorm:"-"`
-	Downloaded         bool      `db:"downloaded"`
-	Links              Links     `db:"links" gorm:"type:json"`
-	Extracted          bool      `db:"extracted"`
+	Links              Links     `db:"-" gorm:"-"`
 	Done               bool      `db:"done"`
 	Error              string    `db:"error"`
 	CreatedAt          time.Time `db:"created_at"`

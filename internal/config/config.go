@@ -28,12 +28,8 @@ func NewConfig(path string) (*config.App, error) {
 		return nil, errors.New("no valid content types")
 	}
 
-	if cfg.DownloaderCount < 1 {
-		cfg.DownloaderCount = 1
-	}
-
-	if cfg.ExtractorCount < 1 {
-		cfg.ExtractorCount = 1
+	if cfg.WorkerCount < 1 {
+		cfg.WorkerCount = 1
 	}
 
 	return cfg, nil

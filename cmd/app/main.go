@@ -4,16 +4,19 @@ import (
 	"flag"
 	"github.com/anvlad11/testapp-20230930/internal/config"
 	"github.com/anvlad11/testapp-20230930/internal/repositories/task"
-	"github.com/anvlad11/testapp-20230930/internal/services/downloader"
-	"github.com/anvlad11/testapp-20230930/internal/services/extractor"
 	"github.com/anvlad11/testapp-20230930/internal/services/manager"
+	"github.com/anvlad11/testapp-20230930/internal/services/worker"
 	"github.com/anvlad11/testapp-20230930/pkg/database"
 	"github.com/anvlad11/testapp-20230930/pkg/model"
 	"log"
 	"time"
 )
 
-var configPath = flag.String("config-path", "./config.yaml", "Path to the application config")
+var configPath = flag.String(
+	"config-path",
+	"./config.yaml",
+	"Path to the application config",
+)
 
 func main() {
 	flag.Parse()
@@ -28,29 +31,24 @@ func main() {
 		log.Fatalf("database error: %v", err)
 	}
 
-	taskRepository := task.NewRepository(db, cfg.DataDirectory, cfg.ContentTypes)
+	taskRepository := task.NewRepository(db)
 
-	managerService := manager.NewService(taskRepository)
+	inputQueue := make(chan *model.Task, 1)
+	managerService := manager.NewService(taskRepository, inputQueue)
 	managerService.Start()
 
-	for i := 1; i <= cfg.DownloaderCount; i++ {
-		downloaderService := downloader.NewService(cfg.ContentTypes)
+	for i := 1; i <= cfg.WorkerCount; i++ {
+		downloaderService := worker.NewService(
+			cfg.ContentTypes,
+			cfg.RequestHeaders,
+			cfg.DataDirectory,
+			taskRepository,
+		)
 		downloaderService.Start()
-		managerService.AddDownloader(downloaderService)
+		managerService.AddWorker(downloaderService)
 	}
 
-	for i := 1; i <= cfg.ExtractorCount; i++ {
-		extractorService := extractor.NewService()
-		extractorService.Start()
-		managerService.AddExtractor(extractorService)
-	}
-
-	initTask := &model.Task{URL: cfg.RootURL}
-
-	err = managerService.Process(initTask)
-	if err != nil {
-		log.Fatalf("could not process root task: %v", err)
-	}
+	inputQueue <- &model.Task{URL: cfg.RootURL}
 
 	for {
 		time.Sleep(1 * time.Second)

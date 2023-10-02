@@ -3,6 +3,7 @@ package repositories
 import "github.com/anvlad11/testapp-20230930/pkg/model"
 
 type TaskRepository interface {
-	Save(task *model.Task) error
-	GetAll() ([]*model.Task, error)
+	Save(task *model.Task) (*model.Task, error)
+	GetProcessing() ([]*model.Task, error)
+	GetByURL(url string) (*model.Task, error)
 }

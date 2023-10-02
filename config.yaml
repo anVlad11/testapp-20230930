@@ -3,13 +3,14 @@ root_url: https://meduza.io
 data_directory: "./data"
 # Path to SQLite database. Will be created if not exists
 database_path: "./data/sqlite.db"
-# Amount of downloaders running in parallel. Values less than 1 are treated as 1
-downloader_count: 1
-# Amount of content extractors running in parallel. Values less than 1 are treated as 1
-extractor_count: 1
+# Amount of workers running in parallel. Values less than 1 are treated as 1
+worker_count: 5
 # Valid content type config. Also defines extensions for saving files without extensions provided by server
 content_types:
   text/html: ".html"
   text/css: ".css"
   application/javascript: ".js"
   application/json: ".json"
+# Request header overrides
+request_headers:
+  user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0

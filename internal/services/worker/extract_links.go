@@ -1,4 +1,4 @@
-package extractor
+package worker
 
 import (
 	"github.com/anvlad11/testapp-20230930/pkg/model"
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (s *Service) extract(task *model.Task) error {
+func (s *Service) extractLinks(task *model.Task) error {
 	doc, err := html.Parse(strings.NewReader(task.Content))
 	if err != nil {
 		return err
